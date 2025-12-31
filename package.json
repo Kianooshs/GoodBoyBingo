@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win portable && node scripts/copy-exe.js"
+    "dist": "electron-builder --win nsis"
   },
   "devDependencies": {
     "electron": "^30.0.0",
@@ -14,7 +14,7 @@
   "build": {
     "appId": "com.goodboybingo.app",
     "productName": "GoodBoyBingo",
-    "artifactName": "GoodBoyBingo.exe",
+    "artifactName": "GoodBoyBingo-Setup.${ext}",
     "asar": true,
     "directories": {
       "output": "dist"
@@ -23,7 +23,13 @@
       "**/*"
     ],
     "win": {
-      "target": "portable"
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }
