@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoodBoyBingo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>GoodBoyBingo</h1>
+      <p class="subtitle">Erstelle dein eigenes Bingo mit individuellen Begriffen.</p>
+    </header>
+
+    <section class="panel">
+      <h2>Bingo konfigurieren</h2>
+      <div class="controls">
+        <label>
+          Größe
+          <select id="sizeSelect">
+            <option value="3">3 × 3</option>
+            <option value="4">4 × 4</option>
+            <option value="5" selected>5 × 5</option>
+          </select>
+        </label>
+        <button id="generateButton" class="primary">Bingo erstellen</button>
+      </div>
+      <p id="selectionInfo" class="info"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Begriffe verwalten</h2>
+      <div class="term-input">
+        <input id="termInput" type="text" placeholder="Neuen Begriff hinzufügen" />
+        <button id="addTermButton">Hinzufügen</button>
+      </div>
+      <p class="hint">Begriffe mit Häkchen werden für das Bingo verwendet. Eigene Begriffe bleiben gespeichert.</p>
+
+      <div class="term-columns">
+        <div class="term-list">
+          <h3>Vorgegebene Begriffe</h3>
+          <ul id="presetList"></ul>
+        </div>
+        <div class="term-list">
+          <h3>Eigene Begriffe</h3>
+          <ul id="customList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Dein Bingo</h2>
+      <div id="bingoGrid" class="grid"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
