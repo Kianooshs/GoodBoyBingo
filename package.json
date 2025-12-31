@@ -4,9 +4,26 @@
   "description": "GoodBoyBingo Desktop App",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win portable && node scripts/copy-exe.js"
   },
   "devDependencies": {
-    "electron": "^30.0.0"
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.goodboybingo.app",
+    "productName": "GoodBoyBingo",
+    "artifactName": "GoodBoyBingo.exe",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": "portable"
+    }
   }
 }
