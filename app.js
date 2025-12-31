@@ -6,6 +6,8 @@ const presetList = document.getElementById("presetList");
 const customList = document.getElementById("customList");
 const bingoGrid = document.getElementById("bingoGrid");
 const selectionInfo = document.getElementById("selectionInfo");
+const generateMessage = document.getElementById("generateMessage");
+const termMessage = document.getElementById("termMessage");
 
 const STORAGE_KEY = "goodboybingo.customTerms";
 
@@ -134,7 +136,13 @@ function updateSelectionInfo() {
     selectionInfo.classList.add("warning");
   } else {
     selectionInfo.classList.remove("warning");
+    setMessage(generateMessage, "");
   }
+}
+
+function setMessage(element, text, type = "") {
+  element.textContent = text;
+  element.classList.toggle("error", type === "error");
 }
 
 function shuffle(array) {
@@ -152,10 +160,15 @@ function generateBingo() {
   const availableTerms = shuffle([...selectedTerms]);
 
   if (availableTerms.length < needed) {
-    alert("Bitte wähle mehr Begriffe aus, damit das Bingo gefüllt werden kann.");
+    setMessage(
+      generateMessage,
+      "Bitte wähle mehr Begriffe aus, damit das Bingo gefüllt werden kann.",
+      "error"
+    );
     return;
   }
 
+  setMessage(generateMessage, "");
   const chosen = availableTerms.slice(0, needed);
   bingoGrid.innerHTML = "";
   bingoGrid.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
@@ -180,11 +193,13 @@ function addCustomTerm() {
 
   const allTerms = new Set([...presetTerms, ...customTerms]);
   if (allTerms.has(value)) {
-    alert("Dieser Begriff existiert bereits.");
-    termInput.value = "";
+    setMessage(termMessage, "Dieser Begriff existiert bereits.", "error");
+    termInput.focus();
+    termInput.select();
     return;
   }
 
+  setMessage(termMessage, "");
   customTerms = [value, ...customTerms];
   selectedTerms.add(value);
   saveCustomTerms();
