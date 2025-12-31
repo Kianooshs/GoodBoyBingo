@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 const path = require("path");
 
 function createWindow() {
@@ -6,6 +6,7 @@ function createWindow() {
     width: 1100,
     height: 800,
     backgroundColor: "#0b1220",
+    autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true
     }
@@ -15,6 +16,7 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   createWindow();
 
   app.on("activate", () => {
