@@ -172,6 +172,17 @@ button.primary {
   font-weight: 600;
 }
 
+.message {
+  margin: 8px 0 0;
+  min-height: 1.2em;
+  color: var(--muted);
+}
+
+.message.error {
+  color: #d64646;
+  font-weight: 600;
+}
+
 .grid {
   display: grid;
   gap: 10px;
