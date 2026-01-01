@@ -9,8 +9,17 @@ const selectionInfo = document.getElementById("selectionInfo");
 const generateMessage = document.getElementById("generateMessage");
 const termMessage = document.getElementById("termMessage");
 const bingoMessage = document.getElementById("bingoMessage");
+const screenshotName = document.getElementById("screenshotName");
+const saveScreenshotButton = document.getElementById("saveScreenshotButton");
+const reviewScreenshotsButton = document.getElementById("reviewScreenshotsButton");
+const screenshotMessage = document.getElementById("screenshotMessage");
+const bingoPopup = document.getElementById("bingoPopup");
+const reviewModal = document.getElementById("reviewModal");
+const reviewList = document.getElementById("reviewList");
+const closeReviewButton = document.getElementById("closeReviewButton");
 
 const STORAGE_KEY = "goodboybingo.customTerms";
+const STORAGE_KEY_SAVED = "goodboybingo.savedCards";
 
 const presetTerms = [
   "Stottern",
@@ -47,6 +56,9 @@ const presetTerms = [
 let customTerms = loadCustomTerms();
 let selectedTerms = new Set([...presetTerms]);
 let bingoAnnounced = false;
+let rowAnnounced = false;
+let fullAnnounced = false;
+let savedCards = loadSavedCards();
 
 function loadCustomTerms() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -59,6 +71,23 @@ function loadCustomTerms() {
   } catch (error) {
     return [];
   }
+}
+
+function loadSavedCards() {
+  const raw = localStorage.getItem(STORAGE_KEY_SAVED);
+  if (!raw) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveSavedCards() {
+  localStorage.setItem(STORAGE_KEY_SAVED, JSON.stringify(savedCards));
 }
 
 function saveCustomTerms() {
@@ -147,6 +176,20 @@ function setMessage(element, text, type = "") {
   element.classList.toggle("error", type === "error");
 }
 
+function showPopup(type, size) {
+  if (!bingoPopup) {
+    return;
+  }
+  const message =
+    type === "full"
+      ? `VOLLES BINGO! (${size}×${size})`
+      : "Reihe komplett!";
+  bingoPopup.textContent = message;
+  bingoPopup.classList.remove("row", "full", "show");
+  void bingoPopup.offsetWidth;
+  bingoPopup.classList.add("show", type);
+}
+
 function shuffle(array) {
   const copy = [...array];
   for (let index = copy.length - 1; index > 0; index -= 1) {
@@ -175,6 +218,8 @@ function generateBingo() {
   bingoGrid.innerHTML = "";
   bingoGrid.classList.remove("bingo-complete");
   bingoAnnounced = false;
+  rowAnnounced = false;
+  fullAnnounced = false;
   setMessage(bingoMessage, "");
   bingoGrid.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
 
@@ -193,6 +238,8 @@ function generateBingo() {
 function evaluateBingo(size) {
   const cells = [...bingoGrid.querySelectorAll(".cell")];
   const isSelected = (index) => cells[index]?.classList.contains("selected");
+  const selectedCount = cells.filter((cell) => cell.classList.contains("selected")).length;
+  const hasFullCard = selectedCount === size * size;
 
   const hasRow = (row) =>
     Array.from({ length: size }, (_, col) => isSelected(row * size + col)).every(
@@ -216,16 +263,32 @@ function evaluateBingo(size) {
     Array.from({ length: size }, (_, col) => hasCol(col)).some(Boolean) ||
     hasDiag;
 
-  if (hasBingo) {
-    if (!bingoAnnounced) {
-      setMessage(bingoMessage, "Bingo! Du hast eine komplette Reihe.");
-      bingoAnnounced = true;
-      bingoGrid.classList.remove("bingo-complete");
-      void bingoGrid.offsetWidth;
-      bingoGrid.classList.add("bingo-complete");
+  if (hasFullCard) {
+    setMessage(bingoMessage, "Volle Bingokarte! Glückwunsch!");
+    bingoGrid.classList.remove("bingo-complete");
+    void bingoGrid.offsetWidth;
+    bingoGrid.classList.add("bingo-complete");
+    if (!fullAnnounced) {
+      showPopup("full", size);
+      fullAnnounced = true;
     }
+    rowAnnounced = true;
+    bingoAnnounced = true;
+    return;
+  }
+
+  if (hasBingo) {
+    fullAnnounced = false;
+    setMessage(bingoMessage, "Bingo! Du hast eine komplette Reihe.");
+    if (!rowAnnounced) {
+      showPopup("row", size);
+      rowAnnounced = true;
+    }
+    bingoAnnounced = true;
   } else {
     bingoAnnounced = false;
+    rowAnnounced = false;
+    fullAnnounced = false;
     setMessage(bingoMessage, "");
     bingoGrid.classList.remove("bingo-complete");
   }
@@ -264,5 +327,110 @@ termInput.addEventListener("keydown", (event) => {
 
 generateButton.addEventListener("click", generateBingo);
 
+function openReviewModal() {
+  reviewModal.classList.add("open");
+  reviewModal.setAttribute("aria-hidden", "false");
+  renderReviewList();
+}
+
+function closeReviewModal() {
+  reviewModal.classList.remove("open");
+  reviewModal.setAttribute("aria-hidden", "true");
+}
+
+function renderReviewList() {
+  reviewList.innerHTML = "";
+  if (savedCards.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "info";
+    empty.textContent = "Noch keine Bingokarten gespeichert.";
+    reviewList.appendChild(empty);
+    return;
+  }
+
+  savedCards.forEach((card) => {
+    const cardElement = document.createElement("div");
+    cardElement.className = "review-card";
+
+    const title = document.createElement("strong");
+    title.textContent = card.name;
+
+    const meta = document.createElement("small");
+    meta.textContent = `${card.size}×${card.size} • ${card.savedAt}`;
+
+    const img = document.createElement("img");
+    img.alt = `Bingokarte ${card.name}`;
+    img.src = card.image;
+
+    cardElement.appendChild(title);
+    cardElement.appendChild(meta);
+    cardElement.appendChild(img);
+    reviewList.appendChild(cardElement);
+  });
+}
+
+function saveScreenshot() {
+  const name = screenshotName.value.trim();
+  if (!name) {
+    setMessage(screenshotMessage, "Bitte gib einen Namen für die Karte an.", "error");
+    screenshotName.focus();
+    return;
+  }
+
+  if (bingoGrid.children.length === 0) {
+    setMessage(screenshotMessage, "Bitte erstelle zuerst ein Bingo.", "error");
+    return;
+  }
+
+  if (typeof window.html2canvas !== "function") {
+    setMessage(
+      screenshotMessage,
+      "Screenshot-Funktion ist gerade nicht verfügbar.",
+      "error"
+    );
+    return;
+  }
+
+  setMessage(screenshotMessage, "Screenshot wird erstellt...");
+  window
+    .html2canvas(bingoGrid, { backgroundColor: null, scale: 2 })
+    .then((canvas) => {
+      const dataUrl = canvas.toDataURL("image/png");
+      const size = Number(sizeSelect.value);
+      const savedAt = new Date().toLocaleString("de-DE");
+      savedCards = [
+        {
+          id: crypto.randomUUID(),
+          name,
+          size,
+          savedAt,
+          image: dataUrl
+        },
+        ...savedCards
+      ];
+      saveSavedCards();
+      renderReviewList();
+      setMessage(screenshotMessage, "Bingokarte gespeichert!");
+      screenshotName.value = "";
+    })
+    .catch(() => {
+      setMessage(
+        screenshotMessage,
+        "Screenshot konnte nicht erstellt werden.",
+        "error"
+      );
+    });
+}
+
+saveScreenshotButton.addEventListener("click", saveScreenshot);
+reviewScreenshotsButton.addEventListener("click", openReviewModal);
+closeReviewButton.addEventListener("click", closeReviewModal);
+reviewModal.addEventListener("click", (event) => {
+  if (event.target === reviewModal) {
+    closeReviewModal();
+  }
+});
+
 renderTerms();
 generateBingo();
+renderReviewList();

@@ -188,6 +188,22 @@ button.primary {
   font-weight: 600;
 }
 
+.bingo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.bingo-actions label {
+  min-width: 240px;
+  flex: 1;
+}
+
+.bingo-actions button.primary {
+  min-width: 220px;
+}
+
 .grid {
   display: grid;
   gap: 10px;
@@ -196,6 +212,99 @@ button.primary {
 
 .grid.bingo-complete {
   animation: bingoPulse 1.2s ease-in-out 2;
+}
+
+.bingo-popup {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  font-weight: 700;
+  text-align: center;
+  color: white;
+  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  z-index: 50;
+}
+
+.bingo-popup.show {
+  animation: popFade 1.8s ease forwards;
+}
+
+.bingo-popup.row {
+  background: radial-gradient(circle at center, rgba(110, 123, 255, 0.4), transparent 65%);
+}
+
+.bingo-popup.full {
+  background: radial-gradient(circle at center, rgba(114, 240, 168, 0.45), transparent 70%);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 22, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 60;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-card {
+  background: var(--panel);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  width: min(900px, 100%);
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.review-list {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.review-card {
+  background: var(--input-bg);
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 8px;
+}
+
+.review-card img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.review-card small {
+  color: var(--muted);
 }
 
 .cell {
@@ -227,6 +336,25 @@ button.primary {
   50% {
     transform: scale(1.01);
     box-shadow: 0 0 18px rgba(110, 123, 255, 0.45);
+  }
+}
+
+@keyframes popFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
   }
 }
 

@@ -53,11 +53,33 @@
 
     <section class="panel">
       <h2>Dein Bingo</h2>
+      <div class="bingo-actions">
+        <label>
+          Name für Screenshot
+          <input id="screenshotName" type="text" placeholder="z. B. Abendrunde 1" />
+        </label>
+        <button id="saveScreenshotButton" class="primary">Bingokarte speichern</button>
+        <button id="reviewScreenshotsButton" type="button">Screenshots ansehen</button>
+      </div>
+      <p id="screenshotMessage" class="message" role="status" aria-live="polite"></p>
       <div id="bingoGrid" class="grid"></div>
       <p id="bingoMessage" class="message success" role="status" aria-live="polite"></p>
     </section>
   </div>
 
+  <div id="bingoPopup" class="bingo-popup" role="status" aria-live="polite"></div>
+
+  <div id="reviewModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reviewTitle">
+      <div class="modal-header">
+        <h2 id="reviewTitle">Gespeicherte Bingokarten</h2>
+        <button id="closeReviewButton" type="button" class="ghost">Schließen</button>
+      </div>
+      <div id="reviewList" class="review-list"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
