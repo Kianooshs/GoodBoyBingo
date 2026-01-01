@@ -17,6 +17,9 @@ const bingoPopup = document.getElementById("bingoPopup");
 const reviewModal = document.getElementById("reviewModal");
 const reviewList = document.getElementById("reviewList");
 const closeReviewButton = document.getElementById("closeReviewButton");
+const imageModal = document.getElementById("imageModal");
+const imageModalPreview = document.getElementById("imageModalPreview");
+const closeImageButton = document.getElementById("closeImageButton");
 
 const STORAGE_KEY = "goodboybingo.customTerms";
 const STORAGE_KEY_SAVED = "goodboybingo.savedCards";
@@ -50,7 +53,17 @@ const presetTerms = [
   "Ich Küss doch dein Herz",
   "In Rp oder Tiktok Sportlich",
   "Kaputte Schallplatte (sagt immer wieder das selbe)",
-  "Geht Crashout"
+  "Geht Crashout",
+  "afd wähler",
+  "Berro mental",
+  "discord mod",
+  "kleinen schwanz",
+  "double time",
+  "Brainrot",
+  "femboy",
+  "du bist nicht tuff bro",
+  "Deine Mutter",
+  "Bruder spam"
 ];
 
 let customTerms = loadCustomTerms();
@@ -59,6 +72,11 @@ let bingoAnnounced = false;
 let rowAnnounced = false;
 let fullAnnounced = false;
 let savedCards = loadSavedCards();
+const filteredCustomTerms = customTerms.filter((term) => !presetTerms.includes(term));
+if (filteredCustomTerms.length !== customTerms.length) {
+  customTerms = filteredCustomTerms;
+  saveCustomTerms();
+}
 
 function loadCustomTerms() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -338,6 +356,20 @@ function closeReviewModal() {
   reviewModal.setAttribute("aria-hidden", "true");
 }
 
+function openImageModal(card) {
+  imageModalPreview.src = card.image;
+  imageModalPreview.alt = `Große Ansicht von ${card.name}`;
+  imageModal.classList.add("open");
+  imageModal.setAttribute("aria-hidden", "false");
+}
+
+function closeImageModal() {
+  imageModal.classList.remove("open");
+  imageModal.setAttribute("aria-hidden", "true");
+  imageModalPreview.src = "";
+  imageModalPreview.alt = "";
+}
+
 function renderReviewList() {
   reviewList.innerHTML = "";
   if (savedCards.length === 0) {
@@ -358,13 +390,19 @@ function renderReviewList() {
     const meta = document.createElement("small");
     meta.textContent = `${card.size}×${card.size} • ${card.savedAt}`;
 
+    const imageButton = document.createElement("button");
+    imageButton.type = "button";
+    imageButton.className = "image-button";
+    imageButton.addEventListener("click", () => openImageModal(card));
+
     const img = document.createElement("img");
     img.alt = `Bingokarte ${card.name}`;
     img.src = card.image;
 
     cardElement.appendChild(title);
     cardElement.appendChild(meta);
-    cardElement.appendChild(img);
+    imageButton.appendChild(img);
+    cardElement.appendChild(imageButton);
     reviewList.appendChild(cardElement);
   });
 }
@@ -428,6 +466,12 @@ closeReviewButton.addEventListener("click", closeReviewModal);
 reviewModal.addEventListener("click", (event) => {
   if (event.target === reviewModal) {
     closeReviewModal();
+  }
+});
+closeImageButton.addEventListener("click", closeImageModal);
+imageModal.addEventListener("click", (event) => {
+  if (event.target === imageModal) {
+    closeImageModal();
   }
 });
 
