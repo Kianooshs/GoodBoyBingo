@@ -52,7 +52,6 @@ const presetTerms = [
   "du drecks Deutscher",
   "Ich Küss doch dein Herz",
   "In Rp oder Tiktok Sportlich",
-  "Kaputte Schallplatte (sagt immer wieder das selbe)",
   "Geht Crashout",
   "afd wähler",
   "Berro mental",
