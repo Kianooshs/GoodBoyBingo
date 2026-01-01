@@ -297,6 +297,19 @@ button.primary {
   gap: 8px;
 }
 
+.image-button {
+  border: none;
+  padding: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: zoom-in;
+}
+
+.image-button:hover {
+  box-shadow: none;
+}
+
 .review-card img {
   width: 100%;
   border-radius: 8px;
@@ -305,6 +318,18 @@ button.primary {
 
 .review-card small {
   color: var(--muted);
+}
+
+.image-modal-card {
+  width: min(1100px, 100%);
+}
+
+.image-modal-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-top: 16px;
 }
 
 .cell {
