@@ -183,10 +183,19 @@ button.primary {
   font-weight: 600;
 }
 
+.message.success {
+  color: #72f0a8;
+  font-weight: 600;
+}
+
 .grid {
   display: grid;
   gap: 10px;
   margin-top: 16px;
+}
+
+.grid.bingo-complete {
+  animation: bingoPulse 1.2s ease-in-out 2;
 }
 
 .cell {
@@ -207,6 +216,18 @@ button.primary {
   border-style: solid;
   border-color: var(--accent);
   background: var(--accent-weak);
+}
+
+@keyframes bingoPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(110, 123, 255, 0);
+  }
+  50% {
+    transform: scale(1.01);
+    box-shadow: 0 0 18px rgba(110, 123, 255, 0.45);
+  }
 }
 
 @media (max-width: 720px) {
