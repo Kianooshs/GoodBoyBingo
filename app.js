@@ -281,7 +281,7 @@ function evaluateBingo(size) {
     hasDiag;
 
   if (hasFullCard) {
-    setMessage(bingoMessage, "Volle Bingokarte! Glückwunsch!");
+    setMessage(bingoMessage, "");
     bingoGrid.classList.remove("bingo-complete");
     void bingoGrid.offsetWidth;
     bingoGrid.classList.add("bingo-complete");
@@ -296,7 +296,7 @@ function evaluateBingo(size) {
 
   if (hasBingo) {
     fullAnnounced = false;
-    setMessage(bingoMessage, "Bingo! Du hast eine komplette Reihe.");
+    setMessage(bingoMessage, "");
     if (!rowAnnounced) {
       showPopup("row", size);
       rowAnnounced = true;
