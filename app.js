@@ -8,6 +8,7 @@ const bingoGrid = document.getElementById("bingoGrid");
 const selectionInfo = document.getElementById("selectionInfo");
 const generateMessage = document.getElementById("generateMessage");
 const termMessage = document.getElementById("termMessage");
+const bingoMessage = document.getElementById("bingoMessage");
 
 const STORAGE_KEY = "goodboybingo.customTerms";
 
@@ -45,6 +46,7 @@ const presetTerms = [
 
 let customTerms = loadCustomTerms();
 let selectedTerms = new Set([...presetTerms]);
+let bingoAnnounced = false;
 
 function loadCustomTerms() {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -171,6 +173,9 @@ function generateBingo() {
   setMessage(generateMessage, "");
   const chosen = availableTerms.slice(0, needed);
   bingoGrid.innerHTML = "";
+  bingoGrid.classList.remove("bingo-complete");
+  bingoAnnounced = false;
+  setMessage(bingoMessage, "");
   bingoGrid.style.gridTemplateColumns = `repeat(${size}, minmax(0, 1fr))`;
 
   chosen.forEach((term) => {
@@ -179,9 +184,51 @@ function generateBingo() {
     cell.textContent = term;
     cell.addEventListener("click", () => {
       cell.classList.toggle("selected");
+      evaluateBingo(size);
     });
     bingoGrid.appendChild(cell);
   });
+}
+
+function evaluateBingo(size) {
+  const cells = [...bingoGrid.querySelectorAll(".cell")];
+  const isSelected = (index) => cells[index]?.classList.contains("selected");
+
+  const hasRow = (row) =>
+    Array.from({ length: size }, (_, col) => isSelected(row * size + col)).every(
+      Boolean
+    );
+  const hasCol = (col) =>
+    Array.from({ length: size }, (_, row) => isSelected(row * size + col)).every(
+      Boolean
+    );
+
+  const hasDiag =
+    Array.from({ length: size }, (_, index) => isSelected(index * size + index)).every(
+      Boolean
+    ) ||
+    Array.from({ length: size }, (_, index) =>
+      isSelected(index * size + (size - 1 - index))
+    ).every(Boolean);
+
+  const hasBingo =
+    Array.from({ length: size }, (_, row) => hasRow(row)).some(Boolean) ||
+    Array.from({ length: size }, (_, col) => hasCol(col)).some(Boolean) ||
+    hasDiag;
+
+  if (hasBingo) {
+    if (!bingoAnnounced) {
+      setMessage(bingoMessage, "Bingo! Du hast eine komplette Reihe.");
+      bingoAnnounced = true;
+      bingoGrid.classList.remove("bingo-complete");
+      void bingoGrid.offsetWidth;
+      bingoGrid.classList.add("bingo-complete");
+    }
+  } else {
+    bingoAnnounced = false;
+    setMessage(bingoMessage, "");
+    bingoGrid.classList.remove("bingo-complete");
+  }
 }
 
 function addCustomTerm() {
