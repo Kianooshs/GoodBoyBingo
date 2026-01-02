@@ -14,6 +14,8 @@ const saveScreenshotButton = document.getElementById("saveScreenshotButton");
 const reviewScreenshotsButton = document.getElementById("reviewScreenshotsButton");
 const screenshotMessage = document.getElementById("screenshotMessage");
 const bingoPopup = document.getElementById("bingoPopup");
+const bingoPopupText = document.getElementById("bingoPopupText");
+const confettiContainer = document.getElementById("confettiContainer");
 const reviewModal = document.getElementById("reviewModal");
 const reviewList = document.getElementById("reviewList");
 const closeReviewButton = document.getElementById("closeReviewButton");
@@ -193,18 +195,46 @@ function setMessage(element, text, type = "") {
   element.classList.toggle("error", type === "error");
 }
 
+function spawnConfetti() {
+  if (!confettiContainer) {
+    return;
+  }
+  confettiContainer.innerHTML = "";
+  const colors = ["#6e7bff", "#72f0a8", "#ffd166", "#ff7a7a", "#c77dff"];
+  const pieces = 18;
+  for (let index = 0; index < pieces; index += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    const x = `${(Math.random() - 0.5) * 160}px`;
+    const y = `${80 + Math.random() * 90}px`;
+    const spin = `${Math.floor(Math.random() * 360)}deg`;
+    const left = `${45 + Math.random() * 10}%`;
+    piece.style.setProperty("--x", x);
+    piece.style.setProperty("--y", y);
+    piece.style.setProperty("--spin", spin);
+    piece.style.left = left;
+    piece.style.top = "50%";
+    piece.style.background = colors[index % colors.length];
+    piece.style.animationDelay = `${Math.random() * 0.1}s`;
+    confettiContainer.appendChild(piece);
+  }
+}
+
 function showPopup(type, size) {
-  if (!bingoPopup) {
+  if (!bingoPopup || !bingoPopupText) {
     return;
   }
   const message =
     type === "full"
       ? `VOLLES BINGO! (${size}×${size})`
       : "Reihe komplett!";
-  bingoPopup.textContent = message;
-  bingoPopup.classList.remove("row", "full", "show");
+  bingoPopupText.textContent = message;
+  bingoPopup.classList.remove("show");
   void bingoPopup.offsetWidth;
-  bingoPopup.classList.add("show", type);
+  bingoPopup.classList.add("show");
+  if (type === "row" || type === "full") {
+    spawnConfetti();
+  }
 }
 
 function shuffle(array) {
@@ -282,9 +312,6 @@ function evaluateBingo(size) {
 
   if (hasFullCard) {
     setMessage(bingoMessage, "");
-    bingoGrid.classList.remove("bingo-complete");
-    void bingoGrid.offsetWidth;
-    bingoGrid.classList.add("bingo-complete");
     if (!fullAnnounced) {
       showPopup("full", size);
       fullAnnounced = true;
@@ -307,7 +334,6 @@ function evaluateBingo(size) {
     rowAnnounced = false;
     fullAnnounced = false;
     setMessage(bingoMessage, "");
-    bingoGrid.classList.remove("bingo-complete");
   }
 }
 
